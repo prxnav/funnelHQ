@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Drag and Drop</title>
+    <style>
+      body {
+        background-color: #0b0c10;
+      }
+      .container-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: auto;
+      }
+      .container {
+        width: 30rem;
+        height: 30rem;
+        border-radius: 1rem;
+        padding: 10px;
+        background-color: #1f2833;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        margin: 5rem;
+        box-shadow: 1px 1px 1px 1px #45a29e;
+      }
+
+      .item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 5rem;
+        width: 5rem;
+        padding: 0.5rem;
+        background-color: #4cc2b9;
+        color: #1f2833;
+        border: 1px solid #999;
+        border-radius: 0.5rem;
+        margin: 1.5rem;
+        cursor: move;
+      }
+
+      .button-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      button {
+        background-color: #0b0c10;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #66fcf1;
+        color: white;
+        height: 3rem;
+        width: 8rem;
+      }
+
+      .success-message {
+        color: white;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-wrapper">
+      <div id="container1" class="container">
+        <div id="item1" class="item" draggable="true">Item 1</div>
+        <div id="item2" class="item" draggable="true">Item 2</div>
+        <div id="item3" class="item" draggable="true">Item 3</div>
+      </div>
+
+      <div id="container2" class="container"></div>
+    </div>
+    <div class="button-wrapper">
+      <button id="resetButton">Reset</button>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const container1 = document.getElementById("container1");
+        const container2 = document.getElementById("container2");
+        const resetButton = document.getElementById("resetButton");
+        let successMessageTimeout;
+
+        function handleDragStart(e) {
+          e.dataTransfer.setData("text/plain", e.target.id);
+          e.target.style.opacity = "0.4";
+        }
+
+        function handleDragEnd(e) {
+          e.target.style.opacity = "1";
+        }
+
+        function handleDragOver(e) {
+          e.preventDefault();
+        }
+
+        function handleDrop(e) {
+          e.preventDefault();
+          const itemId = e.dataTransfer.getData("text/plain");
+          const item = document.getElementById(itemId);
+          container2.appendChild(item);
+          showSuccessMessage();
+        }
+
+        function showSuccessMessage() {
+          const successMessage = document.createElement("p");
+          successMessage.textContent = "Item dropped successfully!";
+          successMessage.classList.add("success-message");
+          container2.appendChild(successMessage);
+          clearTimeout(successMessageTimeout);
+          successMessageTimeout = setTimeout(() => {
+            container2.removeChild(successMessage);
+          }, 700);
+        }
+
+        function resetContainers() {
+          const items = document.querySelectorAll("#container2 .item");
+          items.forEach((item) => {
+            container1.appendChild(item);
+          });
+          container2.innerHTML = "";
+        }
+
+        container1.querySelectorAll(".item").forEach((item) => {
+          item.addEventListener("dragstart", handleDragStart);
+          item.addEventListener("dragend", handleDragEnd);
+        });
+
+        container2.addEventListener("dragover", handleDragOver);
+        container2.addEventListener("drop", handleDrop);
+
+        resetButton.addEventListener("click", resetContainers);
+      });
+    </script>
+  </body>
+</html>
